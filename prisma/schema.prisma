@@ -47,6 +47,8 @@ model User {
   isActive         Boolean   @default(false)
   accounts         Account[]
   sessions         Session[]
+
+  App App[]
 }
 
 model VerificationToken {
@@ -55,4 +57,21 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+
+model App {
+  id           String   @id @default(cuid())
+  name         String
+  botToken     String   @unique
+  userId       String
+  webhookUrl   String?
+  miniAppUrl   String? // optional — your /mini route or subroute
+  createdAt    DateTime @default(now())
+  slug        String   @unique   
+
+
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }

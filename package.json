@@ -17,7 +17,8 @@
     "e2e": "playwright test",
     "e2e:ui": "playwright test --ui",
     "prepare": "husky",
-    "postinstall": "paraglide-js compile --project ./project.inlang --outdir ./src/paraglide"
+    "postinstall": "paraglide-js compile --project ./project.inlang --outdir ./src/paraglide",
+    "db:push": "prisma db push"
   },
   "husky": {
     "hooks": {
@@ -50,6 +51,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.54.2",
+    "slugify": "^1.6.6",
     "stripe": "^17.5.0",
     "tailwind-merge": "^2.6.0",
     "zod": "^3.24.1"
@@ -81,7 +83,7 @@
     "lint-staged": "^15.4.2",
     "postcss": "^8",
     "prettier": "^3.4.2",
-    "prisma": "^6.2.1",
+    "prisma": "^6.5.0",
     "tailwindcss": "^3.4.17",
     "tailwindcss-animate": "^1.0.7",
     "typescript": "^5"

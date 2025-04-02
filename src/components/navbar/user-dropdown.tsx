@@ -33,6 +33,8 @@ export const UserDropdown = ({ session: { user } }: { session: Session }) => {
     });
   };
 
+  console.log(user);
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
