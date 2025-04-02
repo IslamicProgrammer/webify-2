@@ -40,7 +40,7 @@ export default async function BotDetailPage({ params }: BotDetailPageProps) {
 
 <SendMessageButton
   botToken={app.botToken}
-  chatId={process.env.TEST_TELEGRAM_CHAT_ID!}
+  
   webAppUrl={app.miniAppUrl!}
 />
     </main>

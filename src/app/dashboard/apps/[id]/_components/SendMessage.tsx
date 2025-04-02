@@ -4,11 +4,9 @@ import { useTransition } from "react";
 
 interface Props {
   botToken: string;
-  chatId: string | number;
-  webAppUrl?: string;
 }
 
-export default function SendMessageButton({ botToken, chatId, webAppUrl }: Props) {
+export default function SendMessageButton({ botToken }: Props) {
   const [isPending, startTransition] = useTransition();
 
   const sendMessage = async () => {
