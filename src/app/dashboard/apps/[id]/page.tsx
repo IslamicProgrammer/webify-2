@@ -4,11 +4,11 @@ import { notFound } from "next/navigation";
 import SendTestMessage from "./_components/SendMessage";
 import SendMessageButton from "./_components/SendMessage";
 
-interface Props {
+interface BotDetailPageProps {
   params: { id: string };
 }
 
-export default async function BotDetailPage({ params }: Props) {
+export default async function BotDetailPage({ params }: BotDetailPageProps) {
   const session = await auth();
   if (!session?.user) return notFound();
 
