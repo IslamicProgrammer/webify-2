@@ -1,14 +1,11 @@
 import { auth } from "@/app/api/auth/[...nextauth]/auth-options";
 import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import SendTestMessage from "./_components/SendMessage";
 import SendMessageButton from "./_components/SendMessage";
 
-interface BotDetailPageProps {
-  params: { id: string };
-}
 
-export default async function BotDetailPage({ params }: BotDetailPageProps) {
+
+export default async function BotDetailPage({ params }: any) {
   const session = await auth();
   if (!session?.user) return notFound();
 
