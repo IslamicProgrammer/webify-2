@@ -33,13 +33,7 @@ export default async function BotDetailPage({ params }: any) {
         </p>
       )}
 
-
-
-<SendMessageButton
-  botToken={app.botToken}
-  
-  webAppUrl={app.miniAppUrl!}
-/>
+      <SendMessageButton botToken={app.botToken} />
     </main>
   );
 }

@@ -1,13 +1,13 @@
 import { notFound } from "next/navigation";
 import prisma from "@/lib/prisma";
 
-interface MiniAppPageProps {
-  params: { slug: string };
-}
+// interface MiniAppPageProps {
+//   params: { slug: string };
+// }
 
 export const runtime = "nodejs";
 
-export default async function MiniAppPage({ params }: MiniAppPageProps) {
+export default async function MiniAppPage({ params }: any) {
   const app = await prisma.app.findUnique({
     where: { slug: params.slug },
   });
