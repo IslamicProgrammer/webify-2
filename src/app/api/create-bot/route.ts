@@ -1,13 +1,15 @@
-import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
-import { auth } from "@/app/api/auth/[...nextauth]/auth-options";
-import slugify from "slugify";
+import { NextResponse } from 'next/server';
+import slugify from 'slugify';
+
+import { auth } from '@/app/api/auth/[...nextauth]/auth-options';
+import prisma from '@/lib/prisma';
 
 export async function POST(req: Request) {
   // Get the session of the currently authenticated user
   const session = await auth();
+
   if (!session?.user?.id) {
-    return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
   }
 
   // Get the bot name and token from the request body
@@ -15,7 +17,7 @@ export async function POST(req: Request) {
 
   // Check if both name and token are provided
   if (!name || !token) {
-    return NextResponse.json({ ok: false, error: "Missing name or token" }, { status: 400 });
+    return NextResponse.json({ ok: false, error: 'Missing name or token' }, { status: 400 });
   }
 
   // Generate the bot slug from the name
@@ -29,14 +31,14 @@ export async function POST(req: Request) {
         botToken: token,
         slug,
         miniAppUrl: `${process.env.APP_URL}/mini/${slug}`,
-        userId: session.user.id,
-      },
+        userId: session.user.id
+      }
     });
 
     // Respond with the created bot details
     return NextResponse.json({ ok: true, id: app.id });
   } catch (err) {
     // Handle any errors during the creation process
-    return NextResponse.json({ ok: false, error: "Bot already exists or DB error." }, { status: 500 });
+    return NextResponse.json({ ok: false, error: 'Bot already exists or DB error.' }, { status: 500 });
   }
 }

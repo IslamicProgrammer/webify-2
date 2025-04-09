@@ -4,6 +4,7 @@ import { middleware as paraglide } from '@/lib/i18n';
 
 export function middleware(request: NextRequest) {
   const response = paraglide(request);
+
   return response;
 }
 
@@ -16,6 +17,6 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      */
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
-  ],
+    '/((?!api|_next/static|_next/image|favicon.ico).*)'
+  ]
 };

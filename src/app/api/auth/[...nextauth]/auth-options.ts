@@ -12,8 +12,8 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   providers: [
     GoogleProvider({
       clientId: env.GOOGLE_CLIENT_ID,
-      clientSecret: env.GOOGLE_CLIENT_SECRET,
-    }),
+      clientSecret: env.GOOGLE_CLIENT_SECRET
+    })
   ],
   callbacks: {
     async session({ session, user }) {
@@ -24,7 +24,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       session.user.isActive = user.isActive;
 
       return session;
-    },
+    }
   },
   events: {
     createUser: async ({ user }) => {
@@ -33,16 +33,16 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       await stripeServer.customers
         .create({
           email: user.email,
-          name: user.name,
+          name: user.name
         })
-        .then(async (customer) => {
-          return prisma.user.update({
+        .then(async customer =>
+          prisma.user.update({
             where: { id: user.id },
             data: {
-              stripeCustomerId: customer.id,
-            },
-          });
-        });
-    },
-  },
+              stripeCustomerId: customer.id
+            }
+          })
+        );
+    }
+  }
 });

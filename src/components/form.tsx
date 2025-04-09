@@ -2,10 +2,12 @@
 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 import { z } from 'zod';
 
 import { helloAction } from '@/actions/hello-action';
-import { Button } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
@@ -13,17 +15,18 @@ import { cn } from '@/lib/utils';
 import * as m from '@/paraglide/messages';
 
 const formSchema = z.object({
-  name: z.string().min(3),
+  name: z.string().min(3)
 });
 
 type FormSchema = z.infer<typeof formSchema>;
 
 export const HeroForm = () => {
+  const session = useSession();
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: '',
-    },
+      name: ''
+    }
   });
   const { toast } = useToast();
 
@@ -42,21 +45,16 @@ export const HeroForm = () => {
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <Input
-                  placeholder={m.input_placeholder()}
-                  className={cn(
-                    'md:w-96',
-                    form.formState.errors.name && 'border-destructive'
-                  )}
-                  {...field}
-                />
+                <Input placeholder={m.input_placeholder()} className={cn('md:w-96', form.formState.errors.name && 'border-destructive')} {...field} />
               </FormControl>
             </FormItem>
           )}
         />
-        <Button variant="secondary" type="submit">
-          {m.submit_form()}
-        </Button>
+        {session.status === 'authenticated' && (
+          <Link href="/dashboard/apps" className={buttonVariants({ variant: 'default' })}>
+            Dashboard
+          </Link>
+        )}
       </form>
     </Form>
   );
