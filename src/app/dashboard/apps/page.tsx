@@ -10,9 +10,10 @@ export default async function AppsListPage() {
 
   if (!session?.user) return null;
 
-  const apps = await prisma.app.findMany({
-    where: { userId: session.user.id }
-  });
+  const apps =
+    (await prisma.app.findMany({
+      where: { userId: session.user.id }
+    })) || [];
 
   return (
     <main className="p-4">

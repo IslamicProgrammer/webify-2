@@ -18,13 +18,13 @@ export default function SendMessageButton({ botToken, slug }: Props) {
           botToken,
           chatId: 872208636,
           message: '🚀 Hello from your Mini Web App!',
-          webAppUrl: `https://8ab9-94-158-62-83.ngrok-free.app/mini/${slug}`,
+          webAppUrl: `https://2d71-146-158-94-68.ngrok-free.app/mini/${slug}`,
           reply_markup: {
             inline_keyboard: [
               [
                 {
                   text: 'Open Mini App',
-                  web_app: { url: `https://8ab9-94-158-62-83.ngrok-free.app/mini/${slug}` }
+                  web_app: { url: `https://2d71-146-158-94-68.ngrok-free.app/mini/${slug}` }
                 }
               ]
             ]

@@ -4,7 +4,6 @@ import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { useToast } from '@/components/ui/use-toast';
-// import { trpc } from '@/utils/trpc';
 
 export default function NewBotPage() {
   const [name, setName] = useState('');
@@ -12,11 +11,31 @@ export default function NewBotPage() {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const { toast } = useToast();
-  // const createMutation = trpc.createBot.useMutation();
+
+  // Setup webhook after bot creation
+  async function setupBotWebhook(botToken: string, botId: string) {
+    const webhookUrl = `https://e803-146-158-94-68.ngrok-free.app/webhook/${botId}`;
+
+    const response = await fetch(`https://api.telegram.org/bot${botToken}/setWebhook`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        url: webhookUrl,
+        drop_pending_updates: true
+      })
+    });
+
+    const data = await response.json();
+
+    return data;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Simple validation for fields
     if (!name || !token) {
       toast({
         variant: 'destructive',
@@ -25,13 +44,9 @@ export default function NewBotPage() {
       });
       return;
     }
-    //
-    // createMutation.mutate({
-    //   botToken: token,
-    //   name
-    // });
 
     startTransition(async () => {
+      // Validate the bot token with Telegram
       const validate = await fetch('/api/validate-bot', {
         method: 'POST',
         body: JSON.stringify({ botToken: token })
@@ -48,6 +63,7 @@ export default function NewBotPage() {
         return;
       }
 
+      // Save the bot in the database
       const save = await fetch('/api/create-bot', {
         method: 'POST',
         body: JSON.stringify({ name, token })
@@ -56,11 +72,25 @@ export default function NewBotPage() {
       const result = await save.json();
 
       if (result.ok && result.id) {
+        const botId = result.id;
+
+        // Setup webhook after bot creation
+        const res = await setupBotWebhook(token, botId);
+
+        if (!res.ok) {
+          toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: res.description ?? 'Webhook error'
+          });
+          return;
+        }
         toast({
           title: 'Bot created!',
           description: `${name} is ready 🎉`
         });
-        router.push(`/dashboard/apps/${result.id}`);
+
+        router.push(`/dashboard/apps/${botId}`);
       } else {
         toast({
           variant: 'destructive',

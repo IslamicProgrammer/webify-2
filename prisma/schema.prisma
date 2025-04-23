@@ -7,6 +7,32 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// User model: Vendors and customers are differentiated by `userType`
+model User {
+  id               String    @id @default(cuid())
+  name             String?
+  email            String?   @unique
+  emailVerified    DateTime?
+  image            String?
+  stripeCustomerId String?   @unique
+  isActive         Boolean   @default(false)
+  userType         UserType  @default(VENDOR) // To differentiate vendors and customers
+  accounts         Account[]
+  sessions         Session[]
+
+  // Relationship to Vendor's Apps (bots) and customer's interactions
+  App App[] // A user can be associated with multiple apps (bots)
+
+  // If user is a vendor, they can have multiple customers interacting with their bots
+  Customer Customer[]
+}
+
+enum UserType {
+  VENDOR // Vendor: Owns one or more bots (App)
+  CUSTOMER // Customer: Interacts with bots created by vendors
+}
+
+// Account model for OAuth/SSO handling
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -27,6 +53,7 @@ model Account {
   @@index([userId])
 }
 
+// Session model for tracking user sessions
 model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
@@ -37,19 +64,6 @@ model Session {
   @@index([userId])
 }
 
-model User {
-  id               String    @id @default(cuid())
-  name             String?
-  email            String?   @unique
-  emailVerified    DateTime?
-  image            String?
-  stripeCustomerId String?   @unique
-  isActive         Boolean   @default(false)
-  accounts         Account[]
-  sessions         Session[]
-
-  App App[]
-}
 
 model VerificationToken {
   identifier String
@@ -59,19 +73,32 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-
+// App model for storing bot information (each bot belongs to a vendor)
 model App {
-  id           String   @id @default(cuid())
-  name         String
-  botToken     String   @unique
-  userId       String
-  webhookUrl   String?
-  miniAppUrl   String? // optional — your /mini route or subroute
-  createdAt    DateTime @default(now())
-  slug        String   @unique   
+  id         String   @id @default(cuid())
+  name       String
+  botToken   String   @unique
+  userId     String
+  webhookUrl String?
+  miniAppUrl String? // Optional — your /mini route or subroute
+  createdAt  DateTime @default(now())
+  slug       String   @unique
 
-
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Customer Customer[]
 
   @@index([userId])
+}
+
+// Customer model for storing customer interactions with bots
+model Customer {
+  id        String   @id @default(cuid())
+  userId    String
+  appId     String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  app  App  @relation(fields: [appId], references: [id], onDelete: Cascade)
+
+  @@index([userId, appId])
 }
