@@ -1,3 +1,5 @@
+/* eslint-disable no-alert */
+
 'use client';
 
 // In your Next.js Mini App (page.tsx) inside the app directory

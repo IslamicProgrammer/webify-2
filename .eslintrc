@@ -35,6 +35,8 @@
     "newline-after-var": "error",
     "no-unused-vars": "off",
     "@typescript-eslint/no-unused-vars": "off",
+    "sort-imports": "off",
+    "eslint-plugin-import/no-import-module-exports": "off",
     "simple-import-sort/imports": [
       "error",
       {
@@ -108,6 +110,7 @@
       {
         "functions": false
       }
-    ]
+    ],
+    "import/order": "off"
   }
 }
