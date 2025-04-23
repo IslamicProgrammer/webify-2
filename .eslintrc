@@ -35,7 +35,6 @@
     "newline-after-var": "error",
     "no-unused-vars": "off",
     "@typescript-eslint/no-unused-vars": "off",
-    "simple-import-sort/exports": "error",
     "simple-import-sort/imports": [
       "error",
       {

@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/order
 import { LanguageSwitcher } from './language-switcher';
 
 import { auth } from '@/app/api/auth/[...nextauth]/auth-options';

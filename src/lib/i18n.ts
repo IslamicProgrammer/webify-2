@@ -6,11 +6,8 @@ const strategy = PrefixStrategy<AvailableLanguageTag>({
   prefixDefault: 'never',
 
   // don't generate alternate routes for the api
-  exclude: (pathname) => {
-    return pathname.startsWith('/api/') || pathname === '/api';
-  },
+  exclude: pathname => pathname.startsWith('/api/') || pathname === '/api'
 });
 
 export const middleware = Middleware({ strategy });
-export const { Link, useRouter, usePathname, redirect, permanentRedirect } =
-  Navigation({ strategy });
+export const { Link, useRouter, usePathname, redirect, permanentRedirect } = Navigation({ strategy });

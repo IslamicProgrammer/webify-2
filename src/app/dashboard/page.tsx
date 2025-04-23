@@ -14,6 +14,7 @@ export default async function DashboardPage() {
 
   async function saveToken(formData: FormData) {
     'use server';
+
     const token = formData.get('token') as string;
 
     revalidatePath('/dashboard');
