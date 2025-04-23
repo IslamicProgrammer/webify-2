@@ -1,18 +1,6 @@
 {
-  "extends": [
-    "airbnb-typescript",
-    "prettier",
-    "next/core-web-vitals",
-    "prettier"
-  ],
-  "plugins": [
-    "prettier",
-    "@typescript-eslint",
-    "unused-imports",
-    "simple-import-sort",
-    "import",
-    "cypress"
-  ],
+  "extends": ["airbnb-typescript", "prettier", "next/core-web-vitals", "prettier"],
+  "plugins": ["prettier", "@typescript-eslint", "unused-imports", "simple-import-sort", "import", "cypress"],
   "parser": "@typescript-eslint/parser",
   "ignorePatterns": ["cypress.config.ts", "cypress/*"],
   "parserOptions": {
@@ -53,15 +41,7 @@
       {
         "groups": [
           ["^\\u0000"],
-          [
-            "^react$",
-            "^react-dom$",
-            "^react-redux$",
-            "^react-hook-form$",
-            "^react-router$",
-            "^react-router-dom$",
-            "^@?\\w"
-          ],
+          ["^react$", "^react-dom$", "^react-redux$", "^react-hook-form$", "^react-router$", "^react-router-dom$", "^@?\\w"],
           ["^~"],
           ["^hooks"],
           ["^config"],
@@ -107,14 +87,7 @@
     "import/no-extraneous-dependencies": [
       "off",
       {
-        "devDependencies": [
-          "**/*.test.js",
-          "**/*.test.jsx",
-          "**/*.test.ts",
-          "**/*.test.tsx",
-          "src/tests/**/*",
-          "src/setupTests.ts"
-        ]
+        "devDependencies": ["**/*.test.js", "**/*.test.jsx", "**/*.test.ts", "**/*.test.tsx", "src/tests/**/*", "src/setupTests.ts"]
       }
     ],
     "react/jsx-props-no-spreading": "off",
