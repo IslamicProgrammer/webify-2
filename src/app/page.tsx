@@ -18,7 +18,7 @@ const Home = () => (
       </Button>
       <Button variant="outline" asChild>
         <a href="https://github.com/Skolaczk/next-starter" target="_blank">
-          <Icons.github className="mr-2 size-4" /> {m.github()}
+          <Icons.Github className="mr-2 size-4" /> {m.github()}
         </a>
       </Button>
     </div>

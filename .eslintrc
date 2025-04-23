@@ -130,6 +130,7 @@
     "@typescript-eslint/lines-between-class-members": "off",
     "no-console": "warn",
     "no-use-before-define": "off",
+    "react/jsx-pascal-case": "off",
     "@typescript-eslint/no-use-before-define": [
       "error",
       {
