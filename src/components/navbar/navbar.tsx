@@ -1,14 +1,17 @@
+'use client';
+
 // eslint-disable-next-line import/order
+import { useSession } from 'next-auth/react';
+
 import { LanguageSwitcher } from './language-switcher';
 
-import { auth } from '@/app/api/auth/[...nextauth]/auth-options';
 import { SignInButton } from '@/components/navbar/sign-in-button';
 import { UserDropdown } from '@/components/navbar/user-dropdown';
 import { Link } from '@/lib/i18n';
 import * as m from '@/paraglide/messages';
 
-export const Navbar = async () => {
-  const session = await auth();
+export const Navbar = () => {
+  const { data } = useSession();
 
   return (
     <header className="w-full border-b">
@@ -17,7 +20,7 @@ export const Navbar = async () => {
           {m.app_name()}
         </Link>
         <div className="flex items-center gap-2">
-          {session ? <UserDropdown session={session} /> : <SignInButton />}
+          {data ? <UserDropdown session={data} /> : <SignInButton />}
           <LanguageSwitcher />
         </div>
       </div>

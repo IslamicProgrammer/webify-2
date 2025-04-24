@@ -6,7 +6,6 @@ import { SessionProvider } from 'next-auth/react'; // Import SessionProvider
 import '@/styles/globals.css';
 
 import { Footer } from '@/components/footer';
-import { Navbar } from '@/components/navbar/navbar';
 import { ThemeProvider } from '@/components/theme-provider';
 import { ThemeSwitcher } from '@/components/theme-switcher';
 import { Toaster } from '@/components/ui/toaster';
@@ -56,8 +55,7 @@ const RootLayout = ({ children }: PropsWithChildren) => (
         <ThemeProvider attribute="class">
           <>
             <SessionProvider>
-              <Navbar />
-              <div className="container">{children}</div>
+              {children}
               <ThemeSwitcher className="absolute bottom-5 right-5 z-10" />
               <Footer />
               <Toaster />

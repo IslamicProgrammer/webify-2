@@ -3,7 +3,9 @@
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 
+import { buttonVariants } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
+import { cn } from '@/lib/utils';
 
 export default function NewBotPage() {
   const [name, setName] = useState('');
@@ -12,30 +14,19 @@ export default function NewBotPage() {
   const router = useRouter();
   const { toast } = useToast();
 
-  // Setup webhook after bot creation
   async function setupBotWebhook(botToken: string, botId: string) {
-    const webhookUrl = `https://e803-146-158-94-68.ngrok-free.app/webhook/${botId}`;
-
+    const webhookUrl = `https://7633-146-158-94-68.ngrok-free.app/webhook/${botId}`;
     const response = await fetch(`https://api.telegram.org/bot${botToken}/setWebhook`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        url: webhookUrl,
-        drop_pending_updates: true
-      })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url: webhookUrl, drop_pending_updates: true })
     });
 
-    const data = await response.json();
-
-    return data;
+    return response.json();
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Simple validation for fields
     if (!name || !token) {
       toast({
         variant: 'destructive',
@@ -46,7 +37,6 @@ export default function NewBotPage() {
     }
 
     startTransition(async () => {
-      // Validate the bot token with Telegram
       const validate = await fetch('/api/validate-bot', {
         method: 'POST',
         body: JSON.stringify({ botToken: token })
@@ -63,7 +53,6 @@ export default function NewBotPage() {
         return;
       }
 
-      // Save the bot in the database
       const save = await fetch('/api/create-bot', {
         method: 'POST',
         body: JSON.stringify({ name, token })
@@ -73,8 +62,6 @@ export default function NewBotPage() {
 
       if (result.ok && result.id) {
         const botId = result.id;
-
-        // Setup webhook after bot creation
         const res = await setupBotWebhook(token, botId);
 
         if (!res.ok) {
@@ -85,6 +72,7 @@ export default function NewBotPage() {
           });
           return;
         }
+
         toast({
           title: 'Bot created!',
           description: `${name} is ready 🎉`
@@ -102,21 +90,33 @@ export default function NewBotPage() {
   };
 
   return (
-    <main className="mx-auto max-w-xl space-y-6 p-6">
-      <h1 className="text-2xl font-bold">Create a New Telegram Bot</h1>
+    <main className="space-y-6 p-6">
+      <h1 className="text-2xl font-bold text-gray-800">Create a New Telegram Bot</h1>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium">Bot Name</label>
-          <input className="w-full rounded border px-3 py-2" value={name} onChange={e => setName(e.target.value)} placeholder="My Store Bot" />
+      <form onSubmit={handleSubmit} className="space-y-5 rounded-xl border p-6 shadow-sm">
+        <div className="space-y-1">
+          <label className="block text-sm font-medium text-gray-700">Bot Name</label>
+          <input
+            type="text"
+            value={name}
+            onChange={e => setName(e.target.value)}
+            placeholder="My Store Bot"
+            className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          />
         </div>
 
-        <div>
-          <label className="block text-sm font-medium">BotFather Token</label>
-          <input className="w-full rounded border px-3 py-2" value={token} onChange={e => setToken(e.target.value)} placeholder="123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11" />
+        <div className="space-y-1">
+          <label className="block text-sm font-medium text-gray-700">BotFather Token</label>
+          <input
+            type="text"
+            value={token}
+            onChange={e => setToken(e.target.value)}
+            placeholder="123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
+            className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          />
         </div>
 
-        <button type="submit" disabled={isPending} className="rounded bg-black px-4 py-2 text-white disabled:opacity-50">
+        <button type="submit" disabled={isPending} className={cn(buttonVariants({ variant: 'default' }), 'ml-auto disabled:opacity-60')}>
           {isPending ? 'Creating...' : 'Create Bot'}
         </button>
       </form>
