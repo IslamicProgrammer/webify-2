@@ -20,7 +20,7 @@ export default function SendMessageButton({ botToken, slug }: Props) {
           botToken,
           chatId: 872208636,
           message: '🚀 Hello from your Mini Web App!',
-          webAppUrl: `  /mini/${slug}`,
+          webAppUrl: `  https://mini-app-iota-five.vercel.app/?botId=${slug}`,
           reply_markup: {
             inline_keyboard: [
               [
