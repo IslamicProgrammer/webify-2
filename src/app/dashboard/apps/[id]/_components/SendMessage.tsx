@@ -26,7 +26,7 @@ export default function SendMessageButton({ botToken, slug }: Props) {
               [
                 {
                   text: 'Open Mini App',
-                  web_app: { url: `https://webify-2.vercel.app/mini/${slug}` }
+                  web_app: { url: `https://mini-app-iota-five.vercel.app/?botId=${slug}` }
                 }
               ]
             ]

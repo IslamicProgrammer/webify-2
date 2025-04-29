@@ -15,7 +15,7 @@ export default function NewBotPage() {
   const { toast } = useToast();
 
   async function setupBotWebhook(botToken: string, botId: string) {
-    const webhookUrl = `https://7633-146-158-94-68.ngrok-free.app/webhook/${botId}`;
+    const webhookUrl = `${process.env.SERVER_URL}/webhook/${botId}`;
     const response = await fetch(`https://api.telegram.org/bot${botToken}/setWebhook`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
