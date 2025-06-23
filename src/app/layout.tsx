@@ -1,18 +1,18 @@
 import { PropsWithChildren } from 'react';
 import { LanguageProvider } from '@inlang/paraglide-next';
 import type { Metadata } from 'next';
-import { SessionProvider } from 'next-auth/react'; // Import SessionProvider
+import { SessionProvider } from 'next-auth/react';
+import { Toaster as SonnerToaster } from 'sonner';
 
 import '@/styles/globals.css';
 
-import { Footer } from '@/components/footer';
 import { ThemeProvider } from '@/components/theme-provider';
-import { ThemeSwitcher } from '@/components/theme-switcher';
 import { Toaster } from '@/components/ui/toaster';
 import { siteConfig } from '@/lib/constant';
 import { fonts } from '@/lib/fonts';
 import { cn } from '@/lib/utils';
 import { languageTag } from '@/paraglide/runtime.js';
+import { TRPCReactProvider } from '@/trpc/react';
 
 export const generateMetadata = (): Metadata => ({
   metadataBase: new URL(siteConfig.url()),
@@ -49,22 +49,28 @@ export const generateMetadata = (): Metadata => ({
 });
 
 const RootLayout = ({ children }: PropsWithChildren) => (
-  <LanguageProvider>
-    <html lang={languageTag()} suppressHydrationWarning>
-      <body className={cn('min-h-screen font-sans', fonts)}>
+  <html lang={languageTag()} suppressHydrationWarning>
+    <body className={cn('min-h-screen font-sans', fonts)}>
+      <LanguageProvider>
         <ThemeProvider attribute="class">
-          <>
-            <SessionProvider>
-              {children}
-              <ThemeSwitcher className="absolute bottom-5 right-5 z-10" />
-              <Footer />
-              <Toaster />
-            </SessionProvider>
-          </>
+          <SessionProvider>
+            <TRPCReactProvider>{children}</TRPCReactProvider>
+          </SessionProvider>
+          <Toaster />
+          <SonnerToaster
+            position="top-right"
+            toastOptions={{
+              style: {
+                background: 'hsl(var(--background))',
+                color: 'hsl(var(--foreground))',
+                border: '1px solid hsl(var(--border))'
+              }
+            }}
+          />
         </ThemeProvider>
-      </body>
-    </html>
-  </LanguageProvider>
+      </LanguageProvider>
+    </body>
+  </html>
 );
 
 export default RootLayout;

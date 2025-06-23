@@ -83,6 +83,7 @@ model App {
   miniAppUrl String? // Optional — your /mini route or subroute
   createdAt  DateTime @default(now())
   slug       String   @unique
+  imageUrl   String?
 
   user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   Customer Customer[]

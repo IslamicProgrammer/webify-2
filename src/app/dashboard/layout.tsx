@@ -1,49 +1,40 @@
 'use client';
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { Package, Robot, User } from 'tabler-icons-react';
+import { useEffect, useState } from 'react';
+import type React from 'react';
 
-import { buttonVariants } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-
-const navItems = [
-  { href: '/dashboard/apps', label: 'Apps', icon: Robot },
-  { href: '/dashboard/products', label: 'Products', icon: Package },
-  { href: '/dashboard/users', label: 'Users', icon: User }
-];
+import { Sidebar } from '@/components/dashboard/sidebar';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      const mobile = window.innerWidth < 768;
+
+      setIsMobile(mobile);
+      if (mobile) {
+        setSidebarCollapsed(true);
+      }
+    };
+
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
+
+  const toggleSidebar = () => {
+    setSidebarCollapsed(!sidebarCollapsed);
+  };
 
   return (
-    <div className="flex h-screen min-h-screen">
-      <aside className="w-64 bg-background p-6">
-        <h2 className="mb-6 text-2xl font-bold">
-          <Link href="/">Dashboard</Link>
-        </h2>
-        <nav className="space-y-2">
-          {navItems.map(({ href, label, icon: Icon }) => {
-            const isActive = pathname?.startsWith(href);
+    <div className="flex h-screen bg-background">
+      {/* Desktop Sidebar */}
+      {!isMobile && <Sidebar isCollapsed={sidebarCollapsed} onToggle={toggleSidebar} />}
 
-            return (
-              <Link
-                key={href}
-                href={href}
-                className={cn(
-                  buttonVariants({ variant: isActive ? 'secondary' : 'ghost', size: 'default' }),
-                  'flex w-full items-center justify-start gap-3',
-                  isActive && 'font-semibold'
-                )}
-              >
-                <Icon size={20} />
-                {label}
-              </Link>
-            );
-          })}
-        </nav>
-      </aside>
-      <div className="h-screen flex-1 overflow-auto bg-background/20">{children}</div>
+      {/* Main Content */}
+      <div className="flex flex-1 flex-col overflow-y-auto">{children}</div>
     </div>
   );
 }

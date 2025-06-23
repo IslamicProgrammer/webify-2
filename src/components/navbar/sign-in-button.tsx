@@ -1,23 +1,11 @@
-'use client';
-
-import { useTransition } from 'react';
-import { signIn } from 'next-auth/react';
-
 import { Button } from '@/components/ui/button';
 import * as m from '@/paraglide/messages';
+import { handleSignIn } from '@/server/auth/sign-in';
 
-export const SignInButton = () => {
-  const [isPending, startTransition] = useTransition();
-
-  const handleSignIn = () => {
-    startTransition(async () => {
-      await signIn('google');
-    });
-  };
-
+export function SignInButton() {
   return (
-    <Button onClick={handleSignIn} loading={isPending}>
-      {m.sign_in()}
-    </Button>
+    <form action={handleSignIn}>
+      <Button type="submit">{m.sign_in()}</Button>
+    </form>
   );
-};
+}

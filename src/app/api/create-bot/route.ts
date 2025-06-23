@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import slugify from 'slugify';
 
-import { auth } from '@/app/api/auth/[...nextauth]/auth-options';
 import prisma from '@/lib/prisma';
+import { auth } from '@/server/auth';
 
 export async function POST(req: Request) {
   // Get the session of the currently authenticated user

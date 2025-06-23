@@ -1,7 +1,7 @@
-'use client';
-
 // eslint-disable-next-line import/order
 import { useSession } from 'next-auth/react';
+
+import { ThemeSwitcher } from '../theme-switcher';
 
 import { LanguageSwitcher } from './language-switcher';
 
@@ -14,7 +14,7 @@ export const Navbar = () => {
   const { data } = useSession();
 
   return (
-    <header className="w-full border-b">
+    <header className="w-full border-b bg-background">
       <div className="container flex h-16 items-center justify-between">
         <Link href="/" className="font-mono text-lg font-bold">
           {m.app_name()}
@@ -22,6 +22,7 @@ export const Navbar = () => {
         <div className="flex items-center gap-2">
           {data ? <UserDropdown session={data} /> : <SignInButton />}
           <LanguageSwitcher />
+          <ThemeSwitcher />
         </div>
       </div>
     </header>
