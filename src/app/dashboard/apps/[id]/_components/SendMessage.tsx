@@ -7,9 +7,10 @@ import { useTransition } from 'react';
 interface Props {
   botToken: string;
   slug: string;
+  botId: string;
 }
 
-export default function SendMessageButton({ botToken, slug }: Props) {
+export default function SendMessageButton({ botToken, botId }: Props) {
   const [isPending, startTransition] = useTransition();
 
   const sendMessage = async () => {
@@ -20,13 +21,13 @@ export default function SendMessageButton({ botToken, slug }: Props) {
           botToken,
           chatId: 872208636,
           message: '🚀 Hello from your Mini Web App!',
-          webAppUrl: `https://mini-app-iota-five.vercel.app/`,
+          webAppUrl: `https://mini-app-v2-nu.vercel.app/app/${botId}`,
           reply_markup: {
             inline_keyboard: [
               [
                 {
                   text: 'Open Mini App',
-                  web_app: { url: `https://mini-app-iota-five.vercel.app/` }
+                  web_app: { url: `https://mini-app-v2-nu.vercel.app/app/${botId}` }
                 }
               ]
             ]

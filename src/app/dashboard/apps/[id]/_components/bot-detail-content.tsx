@@ -238,7 +238,7 @@ export function BotDetailContent({ id }: BotDetailContentProps) {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <SendMessageButton slug={app.slug} botToken={app.botToken} />
+                  <SendMessageButton slug={app.slug} botToken={app.botToken} botId={app.id} />
 
                   <Button variant="outline" className="w-full justify-start" asChild>
                     <a className="flex items-center" href={`https://t.me/${botUsername}`} target="_blank" rel="noopener noreferrer">

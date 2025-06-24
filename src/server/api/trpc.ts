@@ -9,6 +9,7 @@
 
 import { initTRPC, TRPCError } from '@trpc/server';
 import superjson from 'superjson';
+import { OpenApiMeta } from 'trpc-to-openapi';
 import { ZodError } from 'zod';
 
 import { auth } from '@/server/auth';
@@ -43,18 +44,21 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
  * ZodErrors so that you get typesafety on the frontend if your procedure fails due to validation
  * errors on the backend.
  */
-const t = initTRPC.context<typeof createTRPCContext>().create({
-  transformer: superjson,
-  errorFormatter({ shape, error }) {
-    return {
-      ...shape,
-      data: {
-        ...shape.data,
-        zodError: error.cause instanceof ZodError ? error.cause.flatten() : null
-      }
-    };
-  }
-});
+const t = initTRPC
+  .context<typeof createTRPCContext>()
+  .meta<OpenApiMeta>()
+  .create({
+    transformer: superjson,
+    errorFormatter({ shape, error }) {
+      return {
+        ...shape,
+        data: {
+          ...shape.data,
+          zodError: error.cause instanceof ZodError ? error.cause.flatten() : null
+        }
+      };
+    }
+  });
 
 /**
  * Create a server-side caller.
@@ -132,3 +136,5 @@ export const protectedProcedure = t.procedure.use(timingMiddleware).use(({ ctx, 
     }
   });
 });
+
+export const openApiProcedure = t.procedure;

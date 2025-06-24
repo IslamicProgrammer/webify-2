@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc';
+import { createTRPCRouter, protectedProcedure, publicProcedure } from '@/server/api/trpc';
 
 // Shared Zod Schemas
 const createAppSchema = z.object({
@@ -105,6 +105,13 @@ export const appsRouter = createTRPCRouter({
       where: {
         id: input.id,
         userId: ctx.session.user.id
+      }
+    })
+  ),
+  getPublicById: publicProcedure.input(z.object({ id: z.string().cuid() })).query(async ({ ctx, input }) =>
+    ctx.db.app.findFirst({
+      where: {
+        id: input.id
       }
     })
   ),

@@ -76,6 +76,8 @@
     "tabler-icons-react": "^1.56.0",
     "tailwind-merge": "^2.6.0",
     "telegraf": "^4.16.3",
+    "trpc-openapi": "^1.2.0",
+    "trpc-to-openapi": "^2.3.1",
     "zod": "^3.24.1"
   },
   "devDependencies": {

@@ -73,7 +73,6 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-// App model for storing bot information (each bot belongs to a vendor)
 model App {
   id         String   @id @default(cuid())
   name       String
