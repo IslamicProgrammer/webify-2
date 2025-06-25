@@ -34,17 +34,22 @@ const createCustomerSchema = z.object({
   lastName: z.string().min(1, 'Last name is required').max(50, 'Last name must be less than 50 characters'),
   phoneNumber: z.string().min(1, 'Phone number is required').max(20, 'Phone number must be less than 20 characters'),
   username: z.string().min(1, 'Username is required').max(50, 'Username must be less than 50 characters'),
-  isPremium: z.boolean().optional()
+  isPremium: z.boolean().optional(),
+  photoUrl: z.string().url().optional()
 });
 
 export const customersRouter = createTRPCRouter({
   create: openApiProcedure
-    .meta({ openapi: { method: 'POST', path: '/customers/create' } })
+    .meta({ openapi: { method: 'POST', path: '/customers.create' } })
     .input(createCustomerSchema)
     .output(z.object({ success: z.boolean(), customerId: z.string().cuid() }))
     .mutation(async ({ ctx, input }) => {
+      const currentUser = await ctx.db.user.findFirst({
+        where: { App: { some: { id: input.appId } } }
+      });
+
       const app = await ctx.db.app.findFirst({
-        where: { id: input.appId, userId: input.userId }
+        where: { id: input.appId, userId: currentUser?.id }
       });
 
       if (!app) throw new Error('Unauthorized or app not found');
@@ -52,7 +57,8 @@ export const customersRouter = createTRPCRouter({
       const customer = await ctx.db.customer.create({
         data: {
           ...input,
-          appId: input.appId
+          appId: input.appId,
+          userId: input.userId
         }
       });
 
