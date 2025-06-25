@@ -311,7 +311,7 @@ export const customersRouter = createTRPCRouter({
     // First, verify the customer belongs to user's app
     const customer = await ctx.db.customer.findFirst({
       where: {
-        id: input.customerId,
+        chatId: input.customerId,
         app: {
           userId: ctx.session.user.id
         }
