@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Customer } from '@prisma/client';
 import { Loader2, MessageSquare, Send } from 'lucide-react';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -26,7 +27,7 @@ type SendMessageFormData = z.infer<typeof sendMessageSchema>;
 interface SendMessageDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  customer: any;
+  customer: Customer;
   onSuccess?: () => void;
 }
 
@@ -60,7 +61,7 @@ export function SendMessageDialog({ open, onOpenChange, customer, onSuccess }: S
 
     setIsSubmitting(true);
     sendMessageMutation.mutate({
-      customerId: customer.id,
+      customerId: customer.chatId,
       message: data.message,
       webAppUrl: data.webAppUrl || undefined
     });
@@ -99,7 +100,9 @@ export function SendMessageDialog({ open, onOpenChange, customer, onSuccess }: S
           <div className="flex items-center gap-3 rounded-lg border bg-muted/50 p-3">
             <Avatar className="h-10 w-10">
               <AvatarImage src={customer.photoUrl || ''} />
-              <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">{getInitials(customer.firstName, customer.lastName)}</AvatarFallback>
+              <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
+                {getInitials(customer.firstName || '', customer.lastName || '')}
+              </AvatarFallback>
             </Avatar>
             <div className="flex-1">
               <p className="font-medium">{displayName}</p>
