@@ -61,7 +61,7 @@ export function SendMessageDialog({ open, onOpenChange, customer, onSuccess }: S
 
     setIsSubmitting(true);
     sendMessageMutation.mutate({
-      customerId: customer.chatId,
+      customerId: customer?.chatId || '',
       message: data.message,
       webAppUrl: data.webAppUrl || undefined
     });
