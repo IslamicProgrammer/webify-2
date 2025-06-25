@@ -74,7 +74,7 @@ export function CustomerDetailContent({ id }: CustomerDetailContentProps) {
                   <Avatar className="h-10 w-10 ring-2 ring-primary/10">
                     <AvatarImage src={customer.photoUrl || ''} />
                     <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 font-semibold text-primary-foreground">
-                      {getInitials(customer.firstName, customer.lastName)}
+                      {getInitials(customer?.firstName || '', customer?.lastName || '')}
                     </AvatarFallback>
                   </Avatar>
                   <div>
@@ -145,7 +145,7 @@ export function CustomerDetailContent({ id }: CustomerDetailContentProps) {
                     <Avatar className="mx-auto h-20 w-20 ring-4 ring-primary/10">
                       <AvatarImage src={customer.photoUrl || ''} />
                       <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-xl font-semibold text-primary-foreground">
-                        {getInitials(customer.firstName, customer.lastName)}
+                        {getInitials(customer?.firstName || '', customer?.lastName || '')}
                       </AvatarFallback>
                     </Avatar>
                     <h3 className="mt-3 text-lg font-semibold">{displayName}</h3>
