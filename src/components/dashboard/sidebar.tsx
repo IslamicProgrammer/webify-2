@@ -30,6 +30,12 @@ const navItems: NavItem[] = [
     badge: '3'
   },
   {
+    href: '/dashboard/customers',
+    label: 'Customers',
+    icon: Users,
+    badge: '24'
+  },
+  {
     href: '/dashboard/products',
     label: 'Products',
     icon: Package,
@@ -39,11 +45,6 @@ const navItems: NavItem[] = [
     href: '/dashboard/analytics',
     label: 'Analytics',
     icon: BarChart3
-  },
-  {
-    href: '/dashboard/users',
-    label: 'Customers',
-    icon: Users
   },
   {
     href: '/dashboard/notifications',
