@@ -47,6 +47,8 @@ export const customersRouter = createTRPCRouter({
         where: { App: { some: { id: input.appId } } }
       });
 
+      if (!currentUser) throw new Error('Unauthorized or user not found');
+
       const app = await ctx.db.app.findFirst({
         where: { id: input.appId, userId: currentUser?.id }
       });
@@ -57,7 +59,7 @@ export const customersRouter = createTRPCRouter({
         data: {
           ...input,
           appId: input.appId,
-          userId: input.userId
+          userId: currentUser?.id!
         }
       });
 
