@@ -61,7 +61,7 @@ export const customersRouter = createTRPCRouter({
           ...input,
           appId: input.appId,
           userId: currentUser?.id!,
-          chatId: input.chatId
+          chatId: input.chatId || ''
         }
       });
 
