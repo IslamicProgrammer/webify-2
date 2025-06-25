@@ -102,6 +102,7 @@ model Customer {
   lastName    String? // Optional: Store last name if needed
   isPremium  Boolean @default(false) // Optional: Flag for premium customers
   isBot      Boolean @default(false) // Optional: Flag to indicate if the customer is a bot
+  chatId     String // Optional: Store chat ID if needed
   photoUrl  String? // Optional: Store photo URL if needed
   languageCode String? // Optional: Store language code for localization
   username String? // Optional: Store username if needed
