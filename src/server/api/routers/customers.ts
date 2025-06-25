@@ -13,7 +13,7 @@ const getCustomersSchema = z.object({
 });
 
 const sendMessageToCustomerSchema = z.object({
-  customerId: z.string().cuid(),
+  customerId: z.string().min(1, 'Customer ID is required'),
   message: z.string().min(1, 'Message is required'),
   webAppUrl: z.string().url().optional()
 });
@@ -329,24 +329,11 @@ export const customersRouter = createTRPCRouter({
       throw new Error('Customer not found or access denied');
     }
 
-    // Send message via Telegram API
     const payload: Record<string, any> = {
-      chat_id: customer.userId, // This should be the Telegram user ID
-      text: input.message
+      chat_id: customer.chatId,
+      text: input.message,
+      parse_mode: 'Markdown' // Enable Markdown formatting
     };
-
-    if (input.webAppUrl) {
-      payload.reply_markup = {
-        inline_keyboard: [
-          [
-            {
-              text: 'Open Mini App',
-              web_app: { url: input.webAppUrl }
-            }
-          ]
-        ]
-      };
-    }
 
     try {
       const response = await fetch(`https://api.telegram.org/bot${customer.app.botToken}/sendMessage`, {
@@ -366,7 +353,6 @@ export const customersRouter = createTRPCRouter({
       throw new Error(`Failed to send message: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }),
-
   // Export customers data
   exportData: protectedProcedure
     .input(
