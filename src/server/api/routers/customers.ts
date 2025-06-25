@@ -31,7 +31,7 @@ const createCustomerSchema = z.object({
   appId: z.string().cuid(),
   firstName: z.string().min(1, 'First name is required').max(50, 'First name must be less than 50 characters'),
   lastName: z.string().min(1, 'Last name is required').max(50, 'Last name must be less than 50 characters'),
-  phoneNumber: z.string().min(1, 'Phone number is required').max(20, 'Phone number must be less than 20 characters'),
+  phoneNumber: z.string().min(1, 'Phone number is required').max(20, 'Phone number must be less than 20 characters').optional(),
   username: z.string().min(1, 'Username is required').max(50, 'Username must be less than 50 characters'),
   isPremium: z.boolean().optional(),
   photoUrl: z.string().url().optional()
