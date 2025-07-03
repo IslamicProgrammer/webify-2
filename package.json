@@ -35,6 +35,8 @@
     "@auth/prisma-adapter": "^2.7.4",
     "@hookform/resolvers": "^3.10.0",
     "@inlang/paraglide-next": "0.7.9",
+    "@medusajs/js-sdk": "^2.8.6",
+    "@medusajs/types": "^2.8.6",
     "@prisma/client": "^6.2.1",
     "@radix-ui/react-alert-dialog": "^1.1.14",
     "@radix-ui/react-avatar": "^1.1.10",

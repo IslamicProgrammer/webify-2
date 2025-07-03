@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronRight, Edit, Eye, EyeOff, MoreHorizontal, Package, Plus, Search, Trash2 } from 'lucide-react';
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
 
 import { DashboardHeader } from '@/components/dashboard/dashboard-header';
 import { Badge } from '@/components/ui/badge';
@@ -12,38 +13,67 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/components/ui/use-toast';
-import { mockCategories } from '@/lib/mock-data/categories';
+import { api } from '@/trpc/react';
 import type { ProductCategoryDTO } from '@/types/category';
 
 export default function CategoriesPage() {
-  const [categories, setCategories] = useState<ProductCategoryDTO[]>(mockCategories);
   const [searchTerm, setSearchTerm] = useState('');
   const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
   const { toast } = useToast();
+  const params = useParams();
+
+  const appId = params.appId as string;
+
+  const { data: categories = [], refetch } = api.categories.getByApp.useQuery();
+
+  const updateCategoryMutation = api.categories.update.useMutation({
+    onSuccess: () => {
+      toast({
+        title: 'Category Updated',
+        description: 'Category status has been updated successfully.'
+      });
+      refetch();
+    }
+  });
+
+  const deleteCategoryMutation = api.categories.delete.useMutation({
+    onSuccess: () => {
+      toast({
+        title: 'Category Deleted',
+        description: 'Category has been deleted successfully.',
+        variant: 'destructive'
+      });
+      refetch();
+    }
+  });
 
   const toggleExpanded = (categoryId: string) => {
     setExpandedCategories(prev => (prev.includes(categoryId) ? prev.filter(id => id !== categoryId) : [...prev, categoryId]));
   };
 
-  const toggleCategoryStatus = (categoryId: string) => {
-    setCategories(prev => prev.map(cat => (cat.id === categoryId ? { ...cat, is_active: !cat.is_active } : cat)));
-    toast({
-      title: 'Category Updated',
-      description: 'Category status has been updated successfully.'
+  const toggleCategoryStatus = async (categoryId: string) => {
+    const category = categories.find(cat => cat.id === categoryId);
+
+    if (!category) return;
+
+    await updateCategoryMutation.mutateAsync({
+      appId,
+      categoryId,
+      data: {
+        is_active: !category.is_active
+      }
     });
   };
 
-  const deleteCategory = (categoryId: string) => {
-    setCategories(prev => prev.filter(cat => cat.id !== categoryId));
-    toast({
-      title: 'Category Deleted',
-      description: 'Category has been deleted successfully.',
-      variant: 'destructive'
+  const deleteCategory = async (categoryId: string) => {
+    await deleteCategoryMutation.mutateAsync({
+      appId,
+      categoryId
     });
   };
 
   const filteredCategories = categories.filter(
-    category => category.name.toLowerCase().includes(searchTerm.toLowerCase()) || category.description.toLowerCase().includes(searchTerm.toLowerCase())
+    category => category.name.toLowerCase().includes(searchTerm.toLowerCase()) || (category.description && category.description.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   const renderCategoryRow = (category: ProductCategoryDTO, level = 0): JSX.Element => {
@@ -220,7 +250,7 @@ export default function CategoriesPage() {
                       </TableCell>
                     </TableRow>
                   ) : (
-                    filteredCategories.filter(category => !category.parent_category_id).map(category => renderCategoryRow(category))
+                    filteredCategories.filter(category => !category.parent_category_id).map(category => renderCategoryRow(category as ProductCategoryDTO, 0))
                   )}
                 </TableBody>
               </Table>
