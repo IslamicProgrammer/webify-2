@@ -1,26 +1,22 @@
+// src/server/api/routers/categories.ts
 import { ProductCategoryDTO } from '@medusajs/types';
 import { TRPCError } from '@trpc/server';
-import axios from 'axios';
 import { z } from 'zod';
 
+import { medusaTokenManager } from '@/lib/medusa-token-manager';
 import { createCategorySchema } from '@/lib/validations/category';
 import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc';
-
-const MEDUSA_BACKEND_URL = process.env.MEDUSA_BACKEND_URL || 'http://localhost:9000';
 
 export const categoriesRouter = createTRPCRouter({
   // Get all categories for a specific app
   getByApp: protectedProcedure.query(async ({ input, ctx }) => {
     try {
-      const response = await axios.get<{ product_categories: ProductCategoryDTO[] }>(`${MEDUSA_BACKEND_URL}/admin/product-categories`, {
-        params: {
-          user_id: ctx.session.user.id
-        }
+      const response = await medusaTokenManager.makeAuthenticatedRequest<{ product_categories: ProductCategoryDTO[] }>('GET', '/admin/product-categories', undefined, {
+        user_id: ctx.session.user.id
       });
 
-      console.log('respinse.data.product_categories', response.data.product_categories);
-
-      return response.data.product_categories || [];
+      console.log('response.product_categories', response.product_categories);
+      return response.product_categories || [];
     } catch (error) {
       console.error('Failed to fetch categories:', error);
       throw new TRPCError({
@@ -40,7 +36,7 @@ export const categoriesRouter = createTRPCRouter({
     )
     .mutation(async ({ input, ctx }) => {
       try {
-        const response = await axios.post(`${MEDUSA_BACKEND_URL}/admin/product-categories`, {
+        const response = await medusaTokenManager.makeAuthenticatedRequest('POST', '/admin/product-categories', {
           name: input.data.name,
           handle: input.data.handle,
           description: input.data.description,
@@ -53,7 +49,7 @@ export const categoriesRouter = createTRPCRouter({
           }
         });
 
-        return response.data.product_category;
+        return response.product_category;
       } catch (error) {
         console.error('Error creating category:', JSON.stringify(error, null, 2));
         throw new TRPCError({
@@ -74,7 +70,7 @@ export const categoriesRouter = createTRPCRouter({
     )
     .mutation(async ({ input, ctx }) => {
       try {
-        const response = await axios.post(`${MEDUSA_BACKEND_URL}/admin/product-categories/${input.categoryId}`, {
+        const response = await medusaTokenManager.makeAuthenticatedRequest('POST', `/admin/product-categories/${input.categoryId}`, {
           ...input.data,
           additional_data: {
             app_id: input.appId,
@@ -82,7 +78,7 @@ export const categoriesRouter = createTRPCRouter({
           }
         });
 
-        return response.data.product_category;
+        return response.product_category;
       } catch (error) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
@@ -101,7 +97,7 @@ export const categoriesRouter = createTRPCRouter({
     )
     .mutation(async ({ input, ctx }) => {
       try {
-        await axios.delete(`${MEDUSA_BACKEND_URL}/admin/product-categories/${input.categoryId}`);
+        await medusaTokenManager.makeAuthenticatedRequest('DELETE', `/admin/product-categories/${input.categoryId}`);
 
         return { success: true };
       } catch (error) {
