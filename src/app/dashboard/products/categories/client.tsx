@@ -16,7 +16,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { api } from '@/trpc/react';
 import type { ProductCategoryDTO } from '@/types/category';
 
-export default function CategoriesClient() {
+export default function Ca() {
   const [searchTerm, setSearchTerm] = useState('');
   const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
   const { toast } = useToast();

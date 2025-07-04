@@ -21,7 +21,7 @@ export const categoriesRouter = createTRPCRouter({
       try {
         // Build query parameters dynamically
         const params: any = {
-          // user_id: ctx.session.user.id
+          user_id: ctx.session.user.id
         };
 
         // Add app_id only if provided
