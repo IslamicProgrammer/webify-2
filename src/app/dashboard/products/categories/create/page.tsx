@@ -41,7 +41,7 @@ export default function CreateCategoryPage() {
         title: 'Category Created Successfully! 🎉',
         description: `${data.name} has been added to your categories.`
       });
-      router.push(`/dashboard/apps/${selectedAppId}/products/categories`);
+      // router.push(`/dashboard/apps/${selectedAppId}/products/categories`);
     },
     onError: error => {
       toast({

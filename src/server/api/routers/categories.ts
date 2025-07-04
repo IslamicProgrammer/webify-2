@@ -8,23 +8,39 @@ import { createCategorySchema } from '@/lib/validations/category';
 import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc';
 
 export const categoriesRouter = createTRPCRouter({
-  // Get all categories for a specific app
-  getByApp: protectedProcedure.query(async ({ input, ctx }) => {
-    try {
-      const response = await medusaTokenManager.makeAuthenticatedRequest<{ product_categories: ProductCategoryDTO[] }>('GET', '/admin/product-categories', undefined, {
-        user_id: ctx.session.user.id
-      });
+  // Get all categories (optionally filtered by app)
+  getByApp: protectedProcedure
+    .input(
+      z
+        .object({
+          appId: z.string().optional()
+        })
+        .optional()
+    )
+    .query(async ({ input, ctx }) => {
+      try {
+        // Build query parameters dynamically
+        const params: any = {
+          // user_id: ctx.session.user.id
+        };
 
-      console.log('response.product_categories', response.product_categories);
-      return response.product_categories || [];
-    } catch (error) {
-      console.error('Failed to fetch categories:', error);
-      throw new TRPCError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: 'Failed to fetch categories'
-      });
-    }
-  }),
+        // Add app_id only if provided
+        if (input?.appId) {
+          params.app_id = input.appId;
+        }
+
+        const response = await medusaTokenManager.makeAuthenticatedRequest<{ product_categories: ProductCategoryDTO[] }>('GET', '/admin/categories', undefined, params);
+
+        console.log('response.product_categories', response);
+        return response.product_categories || [];
+      } catch (error) {
+        console.error('Failed to fetch categories:', error);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to fetch categories'
+        });
+      }
+    }),
 
   // Create a new category
   create: protectedProcedure
@@ -36,7 +52,8 @@ export const categoriesRouter = createTRPCRouter({
     )
     .mutation(async ({ input, ctx }) => {
       try {
-        const response = await medusaTokenManager.makeAuthenticatedRequest('POST', '/admin/product-categories', {
+        // Fixed: Changed from '/admin/product-categories' to '/admin/categories'
+        const response = await medusaTokenManager.makeAuthenticatedRequest('POST', '/admin/categories', {
           name: input.data.name,
           handle: input.data.handle,
           description: input.data.description,
@@ -70,7 +87,8 @@ export const categoriesRouter = createTRPCRouter({
     )
     .mutation(async ({ input, ctx }) => {
       try {
-        const response = await medusaTokenManager.makeAuthenticatedRequest('POST', `/admin/product-categories/${input.categoryId}`, {
+        // Fixed: Changed from '/admin/product-categories' to '/admin/categories'
+        const response = await medusaTokenManager.makeAuthenticatedRequest('POST', `/admin/categories/${input.categoryId}`, {
           ...input.data,
           additional_data: {
             app_id: input.appId,
@@ -95,9 +113,10 @@ export const categoriesRouter = createTRPCRouter({
         categoryId: z.string()
       })
     )
-    .mutation(async ({ input, ctx }) => {
+    .mutation(async ({ input }) => {
       try {
-        await medusaTokenManager.makeAuthenticatedRequest('DELETE', `/admin/product-categories/${input.categoryId}`);
+        // Fixed: Changed from '/admin/product-categories' to '/admin/categories'
+        await medusaTokenManager.makeAuthenticatedRequest('DELETE', `/admin/categories/${input.categoryId}`);
 
         return { success: true };
       } catch (error) {
