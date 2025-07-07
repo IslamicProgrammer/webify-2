@@ -31,8 +31,22 @@ export default function CreateCategoryPage() {
 
   const { data: app, isLoading: appLoading } = api.apps.getAll.useQuery({});
 
-  // Fetch existing categories for parent selection
-  const { data: categories = [], isLoading: categoriesLoading } = api.categories.getByApp.usePrefetchQuery();
+  // ✅ Fix: Use useQuery instead of usePrefetchQuery with proper parameters
+  const { data: categoriesData, isLoading: categoriesLoading } = api.categories.getByApp.useQuery(
+    {
+      appId: selectedAppId || undefined,
+      limit: 100,
+      offset: 0,
+      sortBy: 'created_at',
+      sortOrder: 'desc'
+    },
+    {
+      enabled: !!selectedAppId // Only run query when we have an app selected
+    }
+  );
+
+  // ✅ Extract categories from the response
+  const categories = categoriesData?.categories || [];
 
   // Create category mutation
   const createCategoryMutation = api.categories.create.useMutation({
@@ -41,9 +55,12 @@ export default function CreateCategoryPage() {
         title: 'Category Created Successfully! 🎉',
         description: `${data.name} has been added to your categories.`
       });
-      // router.push(`/dashboard/apps/${selectedAppId}/products/categories`);
+      setIsSubmitting(false); // ✅ Reset submitting state
+
+      router.push(`/dashboard/products/categories`); // ✅ Navigate back
     },
     onError: error => {
+      console.log(error);
       toast({
         variant: 'destructive',
         title: 'Error',
@@ -54,27 +71,40 @@ export default function CreateCategoryPage() {
   });
 
   useEffect(() => {
-    if (!appLoading && !!app) {
+    if (!appLoading && app?.apps && app.apps.length > 0) {
       setSelectedAppId(app.apps[0].id);
     }
   }, [app, appLoading]);
 
-  const {
-    register,
-    handleSubmit,
-    watch,
-    setValue,
-    formState: { errors, isValid }
-  } = useForm<CreateCategoryFormData & { appId: string }>({
-    resolver: zodResolver(createCategorySchema.extend({ appId: z.string().min(1, 'Please select bot is required') })),
+  const form = useForm<CreateCategoryFormData & { appId: string }>({
+    resolver: zodResolver(
+      createCategorySchema.extend({
+        appId: z.string().min(1, 'Please select a bot')
+      })
+    ),
     mode: 'onChange',
-
     defaultValues: {
       appId: selectedAppId || '',
       is_active: true,
       is_internal: false
     }
   });
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors, isValid },
+    reset
+  } = form;
+
+  // ✅ Update appId when selectedAppId changes
+  useEffect(() => {
+    if (selectedAppId) {
+      setValue('appId', selectedAppId);
+    }
+  }, [selectedAppId, setValue]);
 
   const watchedName = watch('name');
   const watchedHandle = watch('handle');
@@ -94,13 +124,29 @@ export default function CreateCategoryPage() {
     setValue('handle', handle);
   };
 
-  const onSubmit = async (data: CreateCategoryFormData) => {
+  const onSubmit = async (data: CreateCategoryFormData & { appId: string }) => {
+    if (!selectedAppId) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Please select a bot first'
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
       await createCategoryMutation.mutateAsync({
-        appId: selectedAppId!,
-        data
+        appId: selectedAppId,
+        data: {
+          name: data.name,
+          handle: data.handle,
+          description: data.description,
+          parent_category_id: data.parent_category_id,
+          is_active: data.is_active,
+          is_internal: data.is_internal
+        }
       });
     } catch (error) {
       // Error is handled in the mutation's onError
@@ -108,7 +154,7 @@ export default function CreateCategoryPage() {
     }
   };
 
-  // Parent categories (excluding sub-categories for simplicity)
+  // ✅ Filter parent categories (excluding sub-categories for simplicity)
   const parentCategories = categories.filter(cat => !cat.parent_category_id);
 
   return (
@@ -116,7 +162,7 @@ export default function CreateCategoryPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Link href={`/dashboard/apps/${selectedAppId}/products/categories`}>
+          <Link href={`/dashboard/products/categories`}>
             <Button variant="ghost" size="icon">
               <ArrowLeft className="h-4 w-4" />
             </Button>
@@ -175,27 +221,28 @@ export default function CreateCategoryPage() {
                     </p>
                   )}
                 </div>
-                {/* App ID */}
+
+                {/* App Selection */}
                 <div className="space-y-2">
                   <Label className="flex items-center gap-2">
-                    Associated bot
+                    Associated Bot
                     <Badge variant="secondary" className="text-xs">
                       Required
                     </Badge>
                   </Label>
-                  <Select onValueChange={value => setValue('appId', value)} disabled={appLoading}>
+                  <Select value={selectedAppId || ''} onValueChange={setSelectedAppId} disabled={appLoading}>
                     <SelectTrigger>
-                      <SelectValue placeholder={categoriesLoading ? 'Loading bots...' : 'Select a bot (required)'} />
+                      <SelectValue placeholder={appLoading ? 'Loading bots...' : 'Select a bot (required)'} />
                     </SelectTrigger>
                     <SelectContent>
-                      {app?.apps.map(app => (
-                        <SelectItem key={app.id} value={app.id}>
-                          {app.name}
+                      {app?.apps?.map(appItem => (
+                        <SelectItem key={appItem.id} value={appItem.id}>
+                          {appItem.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
-                  <p className="text-sm text-muted-foreground">Create a subcategory by selecting a parent category.</p>
+                  {errors.appId && <p className="text-sm text-destructive">{errors.appId.message}</p>}
                 </div>
 
                 {/* Handle */}
@@ -236,16 +283,16 @@ export default function CreateCategoryPage() {
                 </div>
 
                 {/* Parent Category */}
-                <div className="space-y-2">
+                {/* <div className="space-y-2">
                   <Label className="flex items-center gap-2">
                     Parent Category
                     <Badge variant="outline" className="text-xs">
                       Optional
                     </Badge>
                   </Label>
-                  <Select onValueChange={value => setValue('parent_category_id', value)} disabled={categoriesLoading}>
+                  <Select onValueChange={value => setValue('parent_category_id', value)} disabled={categoriesLoading || !selectedAppId}>
                     <SelectTrigger>
-                      <SelectValue placeholder={categoriesLoading ? 'Loading categories...' : 'Select a parent category (optional)'} />
+                      <SelectValue placeholder={categoriesLoading ? 'Loading categories...' : !selectedAppId ? 'Select a bot first' : 'Select a parent category (optional)'} />
                     </SelectTrigger>
                     <SelectContent>
                       {parentCategories.map(category => (
@@ -256,7 +303,7 @@ export default function CreateCategoryPage() {
                     </SelectContent>
                   </Select>
                   <p className="text-sm text-muted-foreground">Create a subcategory by selecting a parent category.</p>
-                </div>
+                </div> */}
 
                 {/* Status Toggles */}
                 <div className="space-y-4">
@@ -285,17 +332,12 @@ export default function CreateCategoryPage() {
 
                 {/* Submit Buttons */}
                 <div className="flex gap-4 pt-4">
-                  <Button type="submit" disabled={!isValid || isSubmitting || createCategoryMutation.isPending} className="flex-1">
+                  <Button type="submit" disabled={!isValid || isSubmitting || createCategoryMutation.isPending || !selectedAppId} className="flex-1">
                     {(isSubmitting || createCategoryMutation.isPending) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     <Save className="mr-2 h-4 w-4" />
                     {isSubmitting || createCategoryMutation.isPending ? 'Creating Category...' : 'Create Category'}
                   </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => router.push(`/dashboard/apps/${selectedAppId}/products/categories`)}
-                    disabled={isSubmitting || createCategoryMutation.isPending}
-                  >
+                  <Button type="button" variant="outline" onClick={() => router.push(`/dashboard/products/categories`)} disabled={isSubmitting || createCategoryMutation.isPending}>
                     Cancel
                   </Button>
                 </div>
@@ -317,19 +359,9 @@ export default function CreateCategoryPage() {
                 <div className="text-sm text-muted-foreground">/{watchedHandle || 'category-handle'}</div>
                 <div className="flex gap-2">
                   <Badge variant={watchedIsActive ? 'default' : 'secondary'}>{watchedIsActive ? 'Active' : 'Inactive'}</Badge>
-                  {watchedIsInternal && (
-                    <Badge variant="outline" className="gap-1">
-                      <Lock className="h-3 w-3" />
-                      Internal
-                    </Badge>
-                  )}
+                  <Badge variant={watchedIsInternal ? 'destructive' : 'outline'}>{watchedIsInternal ? 'Internal' : 'Public'}</Badge>
                 </div>
               </div>
-              {watch('description') && (
-                <div className="border-t pt-4">
-                  <p className="text-sm text-muted-foreground">{watch('description')}</p>
-                </div>
-              )}
             </CardContent>
           </Card>
 
@@ -338,11 +370,23 @@ export default function CreateCategoryPage() {
             <CardHeader>
               <CardTitle className="text-lg">Tips</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3 text-sm text-muted-foreground">
-              <p>• Use clear, descriptive names that customers will understand</p>
-              <p>• Handles should be URL-friendly (lowercase, no spaces)</p>
-              <p>• Create parent categories first, then add subcategories</p>
-              <p>• Use internal categories for products not ready for customers</p>
+            <CardContent className="space-y-3 text-sm">
+              <div className="flex items-start gap-2">
+                <CheckCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-500" />
+                <p>Use clear, descriptive names that customers will understand</p>
+              </div>
+              <div className="flex items-start gap-2">
+                <CheckCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-500" />
+                <p>Handles should be URL-friendly (lowercase, no spaces)</p>
+              </div>
+              <div className="flex items-start gap-2">
+                <CheckCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-500" />
+                <p>Create hierarchies by setting parent categories</p>
+              </div>
+              <div className="flex items-start gap-2">
+                <CheckCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-500" />
+                <p>Use internal categories for admin-only organization</p>
+              </div>
             </CardContent>
           </Card>
         </div>

@@ -26,8 +26,25 @@ export const categoriesRouter = createTRPCRouter({
   // Enhanced getByApp with comprehensive filtering
   getByApp: protectedProcedure.input(getCategoriesSchema).query(async ({ input, ctx }) => {
     try {
+      console.log('🔍 DEBUG: Starting getByApp query');
+      console.log('🔍 DEBUG: Input:', JSON.stringify(input, null, 2));
+      console.log('🔍 DEBUG: User ID:', ctx.session.user.id);
+
       // Build query parameters
-      const params: any = {
+      const params: {
+        user_id: string;
+        limit: number;
+        offset: number;
+        sort_by: string;
+        sort_order: string;
+        app_id?: string;
+        search?: string;
+        is_active?: string;
+        is_internal?: string;
+        parent_category_id?: string;
+        date_from?: string;
+        date_to?: string;
+      } = {
         user_id: ctx.session.user.id,
         limit: input.limit,
         offset: input.offset,
@@ -64,7 +81,11 @@ export const categoriesRouter = createTRPCRouter({
         params.date_to = input.dateTo.toISOString();
       }
 
-      console.log('Making categories request with params:', params);
+      console.log('🔍 DEBUG: Final params:', JSON.stringify(params, null, 2));
+      console.log('🔍 DEBUG: About to make request to /admin/categories');
+
+      // Test if medusaTokenManager is initialized
+      console.log('🔍 DEBUG: medusaTokenManager available:', !!medusaTokenManager);
 
       const response = await medusaTokenManager.makeAuthenticatedRequest<{
         product_categories: ProductCategoryDTO[];
@@ -73,10 +94,11 @@ export const categoriesRouter = createTRPCRouter({
         has_more: boolean;
       }>('GET', '/admin/categories', undefined, params);
 
-      console.log('Categories response received:', {
+      console.log('🔍 DEBUG: Response received:', {
         categoriesCount: response.product_categories?.length || 0,
         total: response.total,
-        count: response.count
+        count: response.count,
+        responseKeys: Object.keys(response || {})
       });
 
       return {
@@ -86,10 +108,11 @@ export const categoriesRouter = createTRPCRouter({
         hasMore: response.has_more || false
       };
     } catch (error: any) {
-      console.error('Failed to fetch categories:', {
+      console.error('🚨 DEBUG: Error in getByApp:', {
         message: error.message,
         status: error.status,
-        response: error.response?.data
+        response: error.response?.data,
+        stack: error.stack
       });
 
       throw new TRPCError({

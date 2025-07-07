@@ -243,295 +243,296 @@ export default function CategoriesClient() {
         title="Categories"
         description={`Manage your product categories${selectedApp !== 'all' ? ` for ${appsData?.apps.find(app => app.id === selectedApp)?.name}` : ''}`}
       />
+      <main className="h-full w-full p-6">
+        {/* Stats Cards */}
+        <div className="mb-4 grid gap-4 md:grid-cols-4">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Categories</CardTitle>
+              <Package className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats?.total || 0}</div>
+              <p className="text-xs text-muted-foreground">
+                {stats?.rootCategories || 0} root, {stats?.subCategories || 0} subcategories
+              </p>
+            </CardContent>
+          </Card>
 
-      {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-4">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Active Categories</CardTitle>
+              <Eye className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats?.active || 0}</div>
+              <p className="text-xs text-muted-foreground">Visible to customers</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Inactive Categories</CardTitle>
+              <EyeOff className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats?.inactive || 0}</div>
+              <p className="text-xs text-muted-foreground">Hidden from customers</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Internal Categories</CardTitle>
+              <Package className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats?.internal || 0}</div>
+              <p className="text-xs text-muted-foreground">Admin-only categories</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Main Content */}
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Categories</CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats?.total || 0}</div>
-            <p className="text-xs text-muted-foreground">
-              {stats?.rootCategories || 0} root, {stats?.subCategories || 0} subcategories
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Categories</CardTitle>
-            <Eye className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats?.active || 0}</div>
-            <p className="text-xs text-muted-foreground">Visible to customers</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Inactive Categories</CardTitle>
-            <EyeOff className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats?.inactive || 0}</div>
-            <p className="text-xs text-muted-foreground">Hidden from customers</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Internal Categories</CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats?.internal || 0}</div>
-            <p className="text-xs text-muted-foreground">Admin-only categories</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Main Content */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>Categories</CardTitle>
-              <CardDescription>Manage your product categories with advanced filtering and sorting</CardDescription>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm">
-                <Download className="mr-2 h-4 w-4" />
-                Export
-              </Button>
-              <Button asChild>
-                <Link href="/dashboard/products/categories/create">
-                  <Plus className="mr-2 h-4 w-4" />
-                  Create Category
-                </Link>
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {/* Filters and Search */}
-          <div className="mb-6 space-y-4">
-            {/* Search */}
-            <div className="relative">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Search by name, handle, or ID..." value={search} onChange={e => setSearch(e.target.value)} className="pl-8 pr-8" />
-              {search && (
-                <Button variant="ghost" size="sm" className="absolute right-2 top-1.5 h-6 w-6 p-0" onClick={handleClearSearch}>
-                  <X className="h-3 w-3" />
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Categories</CardTitle>
+                <CardDescription>Manage your product categories with advanced filtering and sorting</CardDescription>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm">
+                  <Download className="mr-2 h-4 w-4" />
+                  Export
                 </Button>
-              )}
-            </div>
-
-            {/* Filters Row */}
-            <div className="flex flex-wrap items-center gap-4">
-              {/* App Filter */}
-              <Select value={selectedApp} onValueChange={setSelectedApp}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Select App" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Apps</SelectItem>
-                  {appsData?.apps.map(app => (
-                    <SelectItem key={app.id} value={app.id}>
-                      {app.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              {/* Status Filter */}
-              <Select value={statusFilter} onValueChange={(value: StatusFilter) => setStatusFilter(value)}>
-                <SelectTrigger className="w-[130px]">
-                  <SelectValue placeholder="Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="inactive">Inactive</SelectItem>
-                </SelectContent>
-              </Select>
-
-              {/* Type Filter */}
-              <Select value={typeFilter} onValueChange={(value: TypeFilter) => setTypeFilter(value)}>
-                <SelectTrigger className="w-[130px]">
-                  <SelectValue placeholder="Type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Types</SelectItem>
-                  <SelectItem value="public">Public</SelectItem>
-                  <SelectItem value="internal">Internal</SelectItem>
-                </SelectContent>
-              </Select>
-
-              {/* Hierarchy Filter */}
-              <Select value={hierarchyFilter} onValueChange={(value: HierarchyFilter) => setHierarchyFilter(value)}>
-                <SelectTrigger className="w-[150px]">
-                  <SelectValue placeholder="Hierarchy" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Categories</SelectItem>
-                  <SelectItem value="root">Root Only</SelectItem>
-                  <SelectItem value="subcategories">Subcategories</SelectItem>
-                </SelectContent>
-              </Select>
-
-              {/* Sort Options */}
-              <Select value={sortBy} onValueChange={(value: SortOption) => setSortBy(value)}>
-                <SelectTrigger className="w-[140px]">
-                  <SelectValue placeholder="Sort by" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="created_at">Created Date</SelectItem>
-                  <SelectItem value="updated_at">Updated Date</SelectItem>
-                  <SelectItem value="name">Name</SelectItem>
-                  <SelectItem value="handle">Handle</SelectItem>
-                  <SelectItem value="rank">Rank</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Button variant="outline" size="sm" onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}>
-                {sortOrder === 'asc' ? <SortAsc className="h-4 w-4" /> : <SortDesc className="h-4 w-4" />}
-              </Button>
-
-              {/* Clear Filters */}
-              {(search || selectedApp !== 'all' || statusFilter !== 'all' || typeFilter !== 'all' || hierarchyFilter !== 'all') && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setSearch('');
-                    setSelectedApp('all');
-                    setStatusFilter('all');
-                    setTypeFilter('all');
-                    setHierarchyFilter('all');
-                    setSortBy('created_at');
-                    setSortOrder('desc');
-                  }}
-                >
-                  <X className="mr-2 h-4 w-4" />
-                  Clear Filters
+                <Button size="sm">
+                  <Link className="flex items-center" href="/dashboard/products/categories/create">
+                    <Plus className="mr-2 h-4 w-4" />
+                    Create Category
+                  </Link>
                 </Button>
-              )}
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {/* Filters and Search */}
+            <div className="mb-6 space-y-4">
+              {/* Search */}
+              <div className="relative">
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input placeholder="Search by name, handle, or ID..." value={search} onChange={e => setSearch(e.target.value)} className="pl-8 pr-8" />
+                {search && (
+                  <Button variant="ghost" size="sm" className="absolute right-2 top-1.5 h-6 w-6 p-0" onClick={handleClearSearch}>
+                    <X className="h-3 w-3" />
+                  </Button>
+                )}
+              </div>
+
+              {/* Filters Row */}
+              <div className="flex flex-wrap items-center gap-4">
+                {/* App Filter */}
+                <Select value={selectedApp} onValueChange={setSelectedApp}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Select App" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Apps</SelectItem>
+                    {appsData?.apps.map(app => (
+                      <SelectItem key={app.id} value={app.id}>
+                        {app.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                {/* Status Filter */}
+                <Select value={statusFilter} onValueChange={(value: StatusFilter) => setStatusFilter(value)}>
+                  <SelectTrigger className="w-[130px]">
+                    <SelectValue placeholder="Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Status</SelectItem>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="inactive">Inactive</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                {/* Type Filter */}
+                <Select value={typeFilter} onValueChange={(value: TypeFilter) => setTypeFilter(value)}>
+                  <SelectTrigger className="w-[130px]">
+                    <SelectValue placeholder="Type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Types</SelectItem>
+                    <SelectItem value="public">Public</SelectItem>
+                    <SelectItem value="internal">Internal</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                {/* Hierarchy Filter */}
+                <Select value={hierarchyFilter} onValueChange={(value: HierarchyFilter) => setHierarchyFilter(value)}>
+                  <SelectTrigger className="w-[150px]">
+                    <SelectValue placeholder="Hierarchy" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Categories</SelectItem>
+                    <SelectItem value="root">Root Only</SelectItem>
+                    <SelectItem value="subcategories">Subcategories</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                {/* Sort Options */}
+                <Select value={sortBy} onValueChange={(value: SortOption) => setSortBy(value)}>
+                  <SelectTrigger className="w-[140px]">
+                    <SelectValue placeholder="Sort by" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="created_at">Created Date</SelectItem>
+                    <SelectItem value="updated_at">Updated Date</SelectItem>
+                    <SelectItem value="name">Name</SelectItem>
+                    <SelectItem value="handle">Handle</SelectItem>
+                    <SelectItem value="rank">Rank</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Button variant="outline" size="sm" onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}>
+                  {sortOrder === 'asc' ? <SortAsc className="h-4 w-4" /> : <SortDesc className="h-4 w-4" />}
+                </Button>
+
+                {/* Clear Filters */}
+                {(search || selectedApp !== 'all' || statusFilter !== 'all' || typeFilter !== 'all' || hierarchyFilter !== 'all') && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setSearch('');
+                      setSelectedApp('all');
+                      setStatusFilter('all');
+                      setTypeFilter('all');
+                      setHierarchyFilter('all');
+                      setSortBy('created_at');
+                      setSortOrder('desc');
+                    }}
+                  >
+                    <X className="mr-2 h-4 w-4" />
+                    Clear Filters
+                  </Button>
+                )}
+              </div>
+
+              {/* Results Summary */}
+              <div className="flex items-center justify-between text-sm text-muted-foreground">
+                <span>
+                  Showing {filteredCategories.length} of {total} categories
+                  {search && ` matching "${search}"`}
+                </span>
+                <span>
+                  Sorted by {sortBy.replace('_', ' ')} ({sortOrder})
+                </span>
+              </div>
             </div>
 
-            {/* Results Summary */}
-            <div className="flex items-center justify-between text-sm text-muted-foreground">
-              <span>
-                Showing {filteredCategories.length} of {total} categories
-                {search && ` matching "${search}"`}
-              </span>
-              <span>
-                Sorted by {sortBy.replace('_', ' ')} ({sortOrder})
-              </span>
-            </div>
-          </div>
-
-          {/* Categories Table */}
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="cursor-pointer" onClick={() => toggleSort('name')}>
-                    <div className="flex items-center gap-2">
-                      Name
-                      {sortBy === 'name' && (sortOrder === 'asc' ? <SortAsc className="h-3 w-3" /> : <SortDesc className="h-3 w-3" />)}
-                    </div>
-                  </TableHead>
-                  <TableHead>Description</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Subcategories</TableHead>
-                  <TableHead>Products</TableHead>
-                  <TableHead className="cursor-pointer" onClick={() => toggleSort('created_at')}>
-                    <div className="flex items-center gap-2">
-                      Created
-                      {sortBy === 'created_at' && (sortOrder === 'asc' ? <SortAsc className="h-3 w-3" /> : <SortDesc className="h-3 w-3" />)}
-                    </div>
-                  </TableHead>
-                  <TableHead className="w-[70px]"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {isLoading ? (
-                  // Loading skeleton
-                  Array.from({ length: 5 }).map((_, index) => (
-                    <TableRow key={index}>
-                      <TableCell>
-                        <Skeleton className="h-4 w-32" />
-                      </TableCell>
-                      <TableCell>
-                        <Skeleton className="h-4 w-48" />
-                      </TableCell>
-                      <TableCell>
-                        <Skeleton className="h-4 w-16" />
-                      </TableCell>
-                      <TableCell>
-                        <Skeleton className="h-4 w-8" />
-                      </TableCell>
-                      <TableCell>
-                        <Skeleton className="h-4 w-8" />
-                      </TableCell>
-                      <TableCell>
-                        <Skeleton className="h-4 w-20" />
-                      </TableCell>
-                      <TableCell>
-                        <Skeleton className="h-4 w-8" />
+            {/* Categories Table */}
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="cursor-pointer" onClick={() => toggleSort('name')}>
+                      <div className="flex items-center gap-2">
+                        Name
+                        {sortBy === 'name' && (sortOrder === 'asc' ? <SortAsc className="h-3 w-3" /> : <SortDesc className="h-3 w-3" />)}
+                      </div>
+                    </TableHead>
+                    <TableHead>Description</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Subcategories</TableHead>
+                    <TableHead>Products</TableHead>
+                    <TableHead className="cursor-pointer" onClick={() => toggleSort('created_at')}>
+                      <div className="flex items-center gap-2">
+                        Created
+                        {sortBy === 'created_at' && (sortOrder === 'asc' ? <SortAsc className="h-3 w-3" /> : <SortDesc className="h-3 w-3" />)}
+                      </div>
+                    </TableHead>
+                    <TableHead className="w-[70px]"></TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {isLoading ? (
+                    // Loading skeleton
+                    Array.from({ length: 5 }).map((_, index) => (
+                      <TableRow key={index}>
+                        <TableCell>
+                          <Skeleton className="h-4 w-32" />
+                        </TableCell>
+                        <TableCell>
+                          <Skeleton className="h-4 w-48" />
+                        </TableCell>
+                        <TableCell>
+                          <Skeleton className="h-4 w-16" />
+                        </TableCell>
+                        <TableCell>
+                          <Skeleton className="h-4 w-8" />
+                        </TableCell>
+                        <TableCell>
+                          <Skeleton className="h-4 w-8" />
+                        </TableCell>
+                        <TableCell>
+                          <Skeleton className="h-4 w-20" />
+                        </TableCell>
+                        <TableCell>
+                          <Skeleton className="h-4 w-8" />
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : filteredCategories.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={7} className="h-24 text-center">
+                        <div className="flex flex-col items-center gap-2">
+                          <Package className="h-8 w-8 text-muted-foreground" />
+                          <div>
+                            <p className="font-medium">No categories found</p>
+                            <p className="text-sm text-muted-foreground">
+                              {search || selectedApp !== 'all' || statusFilter !== 'all' || typeFilter !== 'all' || hierarchyFilter !== 'all'
+                                ? 'Try adjusting your filters'
+                                : 'Create your first category to get started'}
+                            </p>
+                          </div>
+                          {!(search || selectedApp !== 'all' || statusFilter !== 'all' || typeFilter !== 'all' || hierarchyFilter !== 'all') && (
+                            <Button asChild>
+                              <Link href="/dashboard/products/categories/create">
+                                <Plus className="mr-2 h-4 w-4" />
+                                Create Category
+                              </Link>
+                            </Button>
+                          )}
+                        </div>
                       </TableCell>
                     </TableRow>
-                  ))
-                ) : filteredCategories.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={7} className="h-24 text-center">
-                      <div className="flex flex-col items-center gap-2">
-                        <Package className="h-8 w-8 text-muted-foreground" />
-                        <div>
-                          <p className="font-medium">No categories found</p>
-                          <p className="text-sm text-muted-foreground">
-                            {search || selectedApp !== 'all' || statusFilter !== 'all' || typeFilter !== 'all' || hierarchyFilter !== 'all'
-                              ? 'Try adjusting your filters'
-                              : 'Create your first category to get started'}
-                          </p>
-                        </div>
-                        {!(search || selectedApp !== 'all' || statusFilter !== 'all' || typeFilter !== 'all' || hierarchyFilter !== 'all') && (
-                          <Button asChild>
-                            <Link href="/dashboard/products/categories/create">
-                              <Plus className="mr-2 h-4 w-4" />
-                              Create Category
-                            </Link>
-                          </Button>
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  // Render categories
-                  filteredCategories
-                    .filter(category => !category.parent_category_id) // Show root categories first
-                    .map(category => renderCategoryRow(category as any, 0))
-                )}
-              </TableBody>
-            </Table>
-          </div>
-
-          {/* Pagination Info */}
-          {categoriesData?.hasMore && (
-            <div className="mt-4 text-center">
-              <p className="text-sm text-muted-foreground">
-                Showing {filteredCategories.length} of {total} categories
-              </p>
-              <Button variant="outline" size="sm" className="mt-2">
-                Load More
-              </Button>
+                  ) : (
+                    // Render categories
+                    filteredCategories
+                      .filter(category => !category.parent_category_id) // Show root categories first
+                      .map(category => renderCategoryRow(category as any, 0))
+                  )}
+                </TableBody>
+              </Table>
             </div>
-          )}
-        </CardContent>
-      </Card>
+
+            {/* Pagination Info */}
+            {categoriesData?.hasMore && (
+              <div className="mt-4 text-center">
+                <p className="text-sm text-muted-foreground">
+                  Showing {filteredCategories.length} of {total} categories
+                </p>
+                <Button variant="outline" size="sm" className="mt-2">
+                  Load More
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </main>
     </div>
   );
 }
