@@ -1,33 +1,36 @@
+// src/types/category.ts
 export interface ProductCategoryDTO {
   id: string;
   name: string;
-  description: string;
+  description?: string;
   handle: string;
   is_active: boolean;
   is_internal: boolean;
-  rank: number;
-  parent_category: ProductCategoryDTO | null;
-  parent_category_id: string | null;
-  category_children: ProductCategoryDTO[];
-  products: ProductDTO[];
-  created_at: string | Date;
-  updated_at: string | Date;
-  metadata?: Record<string, any>;
-  deleted_at?: string | Date;
-}
-
-export interface ProductDTO {
-  id: string;
-  title: string;
-  handle: string;
-  // Add other product fields as needed
-}
-
-export interface CreateCategoryFormData {
-  name: string;
-  description: string;
-  handle: string;
-  is_active: boolean;
-  is_internal: boolean;
+  rank?: number;
   parent_category_id?: string;
+  created_at: string;
+  updated_at: string;
+  metadata?: Record<string, any>;
+  tenant_handle?: string; // For tenant-specific handles
+
+  // Relationships
+  category_children?: ProductCategoryDTO[];
+  parent_category?: ProductCategoryDTO;
+  products?: any[]; // Product type would be defined elsewhere
+}
+
+export interface CategoryStats {
+  total: number;
+  active: number;
+  inactive: number;
+  internal: number;
+  rootCategories: number;
+  subCategories: number;
+}
+
+export interface CategoriesResponse {
+  categories: ProductCategoryDTO[];
+  total: number;
+  count: number;
+  hasMore: boolean;
 }

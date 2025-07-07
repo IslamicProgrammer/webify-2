@@ -32,7 +32,7 @@ export default function CreateCategoryPage() {
   const { data: app, isLoading: appLoading } = api.apps.getAll.useQuery({});
 
   // Fetch existing categories for parent selection
-  const { data: categories = [], isLoading: categoriesLoading } = api.categories.getByApp.useQuery();
+  const { data: categories = [], isLoading: categoriesLoading } = api.categories.getByApp.usePrefetchQuery();
 
   // Create category mutation
   const createCategoryMutation = api.categories.create.useMutation({
