@@ -81,6 +81,7 @@
     "telegraf": "^4.16.3",
     "trpc-openapi": "^1.2.0",
     "trpc-to-openapi": "^2.3.1",
+    "xlsx": "^0.18.5",
     "zod": "^3.24.1"
   },
   "devDependencies": {
