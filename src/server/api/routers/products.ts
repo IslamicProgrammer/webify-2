@@ -26,6 +26,7 @@ const getProductsSchema = z.object({
 });
 
 // Create product schema
+// REPLACE your current createProductSchema with this:
 const createProductSchema = z.object({
   appId: z.string(),
   title: z.string().min(1, 'Product title is required'),
@@ -42,7 +43,71 @@ const createProductSchema = z.object({
   hs_code: z.string().optional(),
   mid_code: z.string().optional(),
   material: z.string().optional(),
-  metadata: z.record(z.any()).optional()
+  metadata: z.record(z.any()).optional(),
+
+  // ADD THESE MISSING FIELDS FOR MEDUSA V2:
+  images: z
+    .array(
+      z.object({
+        url: z.string().url()
+      })
+    )
+    .optional(),
+
+  categories: z
+    .array(
+      z.object({
+        id: z.string()
+      })
+    )
+    .optional(),
+
+  tags: z
+    .array(
+      z.object({
+        value: z.string()
+      })
+    )
+    .optional(),
+
+  // CRITICAL: Add options and variants for Medusa v2
+  options: z
+    .array(
+      z.object({
+        title: z.string(),
+        values: z.array(z.string())
+      })
+    )
+    .optional(),
+
+  variants: z
+    .array(
+      z.object({
+        title: z.string(),
+        sku: z.string().optional(),
+        weight: z.number().optional(),
+        length: z.number().optional(),
+        height: z.number().optional(),
+        width: z.number().optional(),
+        options: z.record(z.string()).optional(),
+        prices: z.array(
+          z.object({
+            amount: z.number(),
+            currency_code: z.string()
+          })
+        )
+      })
+    )
+    .optional(),
+
+  // Add additional_data like categories
+  additional_data: z
+    .object({
+      app_id: z.string(),
+      user_id: z.string().optional(),
+      has_variants: z.boolean().optional()
+    })
+    .optional()
 });
 
 const updateProductSchema = z.object({
@@ -200,15 +265,16 @@ export const productsRouter = createTRPCRouter({
     try {
       console.log('🛍️ DEBUG: Creating product:', JSON.stringify(input, null, 2));
 
-      const { appId, ...productData } = input;
+      const { appId, additional_data, ...productData } = input;
 
-      // Add tenant information to metadata
+      // Build request body following categories pattern
       const requestBody = {
         ...productData,
-        metadata: {
+        // Use additional_data like in categories - NO query params!
+        additional_data: {
           app_id: appId,
           user_id: ctx.session.user.id,
-          ...productData.metadata
+          ...additional_data
         }
       };
 
@@ -220,14 +286,10 @@ export const productsRouter = createTRPCRouter({
           .replace(/^-+|-+$/g, '');
       }
 
-      const params = {
-        user_id: ctx.session.user.id,
-        app_id: appId
-      };
-
+      // DON'T send app_id and user_id as query params - they go in the body!
       const response = await medusaTokenManager.makeAuthenticatedRequest<{
         product: ProductDTO;
-      }>('POST', '/admin/products', requestBody, params);
+      }>('POST', '/admin/products', requestBody); // No params here!
 
       console.log('✅ DEBUG: Product created successfully:', response.product?.id);
 

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { BarChart3, Bell, Bot, ChevronDown, ChevronLeft, ChevronRight, HelpCircle, LayoutDashboard, Package, Settings, Users } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import type React from 'react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -98,6 +98,7 @@ interface SidebarProps {
 export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
   const pathname = usePathname();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
+  const router = useRouter();
 
   const toggleExpanded = (href: string) => {
     setExpandedItems(prev => (prev.includes(href) ? prev.filter(item => item !== href) : [...prev, href]));
@@ -120,6 +121,7 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
           )}
           onClick={() => {
             if (hasSubItems && !isCollapsed) {
+              router.push(item.href);
               toggleExpanded(item.href);
             }
           }}
